@@ -92,17 +92,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const glucose = allValues['Glucose'];
 
     const yScale = d3.scaleLinear(
-      d3.extent(glucose, x => x[1]),
+      [ 0, d3.max(glucose, x => x[1]) ],
       [ height - margin.bottom, margin.top ]
     ).nice();
 
     {
       const [ x1, x2 ] = xScale.range();
-      const [ y1, y2 ] = defs['Glucose'].normal;
+      const [ y1, y2 ] = defs.find(x => x.name === 'Glucose').normal;
       const dash = 1/(0.1 + 1/(x2-x1));
       $(plot.node(), 'path', {
         d: `M${x1} ${yScale(y1)} H${x2} M${x1} ${yScale(y2)} H${x2}`,
-        'stroke': 'black', 'stroke-width': 2, 'stroke-linecap': 'butt',
+        'stroke': '#777', 'stroke-width': 2, 'stroke-linecap': 'butt',
         'stroke-dasharray': `${dash},${dash}`
       });
     }
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .datum(glucose)
       .attr('fill', 'none')
       .attr('stroke', '#cc5500')
-      .attr('stroke-width', 1.5)
+      .attr('stroke-width', 2)
       .attr('d', d3.line()
         .x(d => xScale(d[0]))
         .y(d => yScale(d[1]))
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .datum(lantus)
       .attr('fill', 'none')
       .attr('stroke', '#080')
-      .attr('stroke-width', 1.5)
+      .attr('stroke-width', 2)
       .attr('d', d3.line()
         .x(d => xScale(d[0]))
         .y(d => yScale2(d[1]))
@@ -157,5 +157,34 @@ document.addEventListener('DOMContentLoaded', () => {
         .style('fill', '#080');
 
     $(document.body, 'div', plot.node());
+
+    const table = $(document.body, 'div', 'table', ['data', 'tex']);
+    const tr1 = $(table, 'tr');
+    const tr2 = $(table, 'tr');
+    $(tr1, 'td', { text: 'Time' });
+    $(tr2, 'td');
+    for (const { name, units } of defs) {
+      $(tr1, 'td', { text: name });
+      $(tr2, 'td', { text: units });
+    }
+    const maxFrac = defs.map(_ => 0);
+    const tableValues = data.map(([ time, entry ]) => defs.map(({ name }, i) => {
+      const val = entry[name];
+      if (!Number.isFinite(val))
+        return [ val, 0 ];
+      const str = `${val}`;
+      let frac = str.indexOf('.');
+      frac = frac === -1 ? 0 : str.length - frac - 1;
+      maxFrac[i] = Math.max(maxFrac[i], frac);
+      return [ str, frac ];
+    }));
+    for (let i = data.length; i--; ) {
+      const [ time, entry ] = data[i];
+      const tr = $(table, 'tr');
+      $(tr, 'td', { text: `${time}` });
+      for (const { name } of defs) {
+        $(tr, 'td', { text: entry[name] });
+      }
+    }
   });
 });

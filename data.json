@@ -1,24 +1,25 @@
 {
-  "defs": {
-    "Glucose": {
+  "defs": [
+    {
+      "name": "Glucose",
       "units": "mg/dL",
       "normal": [ 80, 120 ]
-    },
-    "Ketones": {
-    },
-    "Lantus": {
-    },
-    "Humulin": {
-    },
-    "Fluids": {
+    }, {
+      "name": "Ketones"
+    }, {
+      "name": "Lantus"
+    }, {
+      "name": "Humulin"
+    }, {
+      "name": "Fluids",
       "units": "cc"
-    },
-    "Weight": {
+    }, {
+      "name": "Weight",
       "units": "lb"
-    },
-    "B12": {
+    }, {
+      "name": "B12"
     }
-  },
+  ],
   "data": {
     "16 Apr 2025 05:00 pm": { "Glucose": 133, "Ketones": 5.8, "Weight": 7.47 },
     "17 Apr 2025 12:00 pm": { "Glucose": 130, "Ketones": 6.3, "Weight": 7 },
@@ -144,6 +145,8 @@
     "08 Jun 2025 11:21 am": { "Glucose": 356, "Lantus": 1.5 },
     "08 Jun 2025 10:58 pm": { "Glucose": 270, "Lantus": 1.5 },
     "09 Jun 2025 11:41 am": { "Glucose": 391, "Lantus": 1.5 },
-    "09 Jun 2025 10:23 pm": { "Glucose": 323, "Lantus": 2 }
+    "09 Jun 2025 10:23 pm": { "Glucose": 323, "Lantus": 2 },
+    "10 Jun 2025 11:38 am": { "Glucose": 282, "Lantus": 2.5 },
+    "10 Jun 2025 10:33 pm": { "Glucose": 210, "Lantus": 2.5 }
   }
 }

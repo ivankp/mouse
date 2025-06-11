@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Latin Modern Roman';
+  src: url('fonts/lmroman-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   margin: 6pt;
   font-family: sans-serif;
@@ -5,3 +12,35 @@ body {
 
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
+
+.tex {
+  font-family: "Latin Modern Roman", "Times New Roman", serif;
+  font-weight: normal;
+  font-style: normal;
+}
+
+table.data {
+  margin: 5px 0;
+  border-collapse: collapse;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  font-size: small;
+}
+table.data td {
+  text-align: right;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+table.data td:nth-child(1) {
+  text-align: left;
+}
+table.data > tr:nth-child(1) > td,
+table.data > tr:nth-child(2) > td {
+  text-align: center;
+}
+table.data > tr:nth-child(2) {
+  border-bottom: 1px solid #000;
+}
+table.data tr:nth-child(n+3):hover {
+  background-color: #eee;
+}
