@@ -167,27 +167,15 @@ document.addEventListener('DOMContentLoaded', () => {
       $(tr1, 'td', { text: name });
       $(tr2, 'td', { text: units });
     }
-    const maxFrac = defs.map(_ => 0);
-    const tableValues = data.map(([ time, entry ]) => defs.map(({ name }, i) => {
-      const val = entry[name];
-      if (!Number.isFinite(val))
-        return [ val, 0 ];
-      const str = `${val}`;
-      let frac = str.indexOf('.');
-      frac = frac === -1 ? 0 : str.length - frac - 1;
-      maxFrac[i] = Math.max(maxFrac[i], frac);
-      return [ str, frac ];
-    }));
     for (let i = data.length; i--; ) {
+      const [ time, values ] = data[i];
       const tr = $(table, 'tr');
-      $(tr, 'td', { text: `${data[i][0]}` });
-      const row = tableValues[i];
-      for (let j = 0; j < row.length; ++j) {
-        let [ str, frac ] = row[j];
-        if (frac < maxFrac[j]) {
-          str += `.${'0'.repeat(maxFrac[j] - frac)}`;
-        }
-        $(tr, 'td', { text: str });
+      $(tr, 'td', { text: `${time}` });
+      for (const { name, fixed } of defs) {
+        let value = values[name];
+        if (fixed !== undefined && Number.isFinite(value))
+          value = value.toFixed(fixed);
+        $(tr, 'td', { text: value });
       }
     }
   });

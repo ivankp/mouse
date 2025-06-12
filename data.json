@@ -5,9 +5,11 @@
       "units": "mg/dL",
       "normal": [ 80, 120 ]
     }, {
-      "name": "Ketones"
+      "name": "Ketones",
+      "fixed": 1
     }, {
-      "name": "Lantus"
+      "name": "Lantus",
+      "fixed": 1
     }, {
       "name": "Humulin"
     }, {
@@ -15,7 +17,8 @@
       "units": "cc"
     }, {
       "name": "Weight",
-      "units": "lb"
+      "units": "lb",
+      "fixed": 1
     }, {
       "name": "B12"
     }
