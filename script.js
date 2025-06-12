@@ -179,11 +179,15 @@ document.addEventListener('DOMContentLoaded', () => {
       return [ str, frac ];
     }));
     for (let i = data.length; i--; ) {
-      const [ time, entry ] = data[i];
       const tr = $(table, 'tr');
-      $(tr, 'td', { text: `${time}` });
-      for (const { name } of defs) {
-        $(tr, 'td', { text: entry[name] });
+      $(tr, 'td', { text: `${data[i][0]}` });
+      const row = tableValues[i];
+      for (let j = 0; j < row.length; ++j) {
+        let [ str, frac ] = row[j];
+        if (frac < maxFrac[j]) {
+          str += `.${'0'.repeat(maxFrac[j] - frac)}`;
+        }
+        $(tr, 'td', { text: str });
       }
     }
   });
