@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const width = 1100;
+    const width = 1000;
     const height = 400;
     const margin = { top: 20, right: 20, bottom: 30, left: 40 };
 
@@ -158,6 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     $(document.body, 'div', plot.node());
 
+    const timeFormat = d3.timeFormat('%a, %d %b %I:%M %p');
+
     const table = $(document.body, 'div', 'table', ['data', 'tex']);
     const tr1 = $(table, 'tr');
     const tr2 = $(table, 'tr');
@@ -170,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = data.length; i--; ) {
       const [ time, values ] = data[i];
       const tr = $(table, 'tr');
-      $(tr, 'td', { text: `${time}` });
+      $(tr, 'td', { text: timeFormat(time) }, ['tt']);
       for (const { name, fixed } of defs) {
         let value = values[name];
         if (fixed !== undefined && Number.isFinite(value))
