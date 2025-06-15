@@ -58,6 +58,26 @@ const fetch_json = async (url) => {
   }
 };
 
+const dash_segment = (width, a, b = a) => {
+  const ab = a + b;
+  let n = Math.floor((width - a) / ab);
+  // n (a + b) + a
+  // n (a + b) - b
+  // n (a + b) - b < width < n (a + b) + a
+  // width - n (a + b) - b < n (a + b) + a - width
+  n += width >= (n + 0.5) * ab;
+  // n = (width - k*a) / (k*a + k*b);
+  // n = (width/k - a) / (a + b);
+  // n (a + b) = width/k - a;
+  // n (a + b) + a = width/k;
+  const k = width/( n * ab + a );
+  if (a == b) {
+    return `${a * k}`;
+  } else {
+    return `${a * k} ${b * k}`;
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   fetch_json('data.json').then(({ data, defs }) => {
     data = Object.entries(data).map(([ time, values ]) => {
@@ -72,8 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const width = 1000;
-    const height = 400;
+    const width = 900;
+    const height = 300;
     const margin = { top: 20, right: 20, bottom: 30, left: 40 };
 
     const xScale = d3.scaleUtc(
@@ -89,72 +109,52 @@ document.addEventListener('DOMContentLoaded', () => {
       .attr('transform', `translate(0,${height - margin.bottom})`)
       .call(d3.axisBottom(xScale));
 
-    const glucose = allValues['Glucose'];
+    for (const name of ['Glucose', 'Lantus']) {
+      const values = allValues[name];
 
-    const yScale = d3.scaleLinear(
-      [ 0, d3.max(glucose, x => x[1]) ],
-      [ height - margin.bottom, margin.top ]
-    ).nice();
+      const yScale = d3.scaleLinear(
+        [ 0, d3.max(values, x => x[1]) * 1.05 ],
+        [ height - margin.bottom, margin.top ]
+      ).nice();
 
-    {
-      const [ x1, x2 ] = xScale.range();
-      const [ y1, y2 ] = defs.find(x => x.name === 'Glucose').normal;
-      const dash = 1/(0.1 + 1/(x2-x1));
-      $(plot.node(), 'path', {
-        d: `M${x1} ${yScale(y1)} H${x2} M${x1} ${yScale(y2)} H${x2}`,
-        'stroke': '#777', 'stroke-width': 2, 'stroke-linecap': 'butt',
-        'stroke-dasharray': `${dash},${dash}`
-      });
+      const def = defs.find(x => x.name === name);
+      if (def.normal !== undefined) {
+        const [ x1, x2 ] = xScale.range();
+        const [ y1, y2 ] = def.normal;
+        $(plot.node(), 'path', {
+          d: `M${x1} ${yScale(y1)} H${x2} M${x1} ${yScale(y2)} H${x2}`,
+          'stroke': '#777', 'stroke-width': 2, 'stroke-linecap': 'butt',
+          'stroke-dasharray': dash_segment(x2 - x1, 10, 8), 'fill': 'none'
+        });
+      }
+
+      if (name === 'Glucose') { // TODO
+        plot.append('g')
+          .attr('transform', `translate(${margin.left},0)`)
+          .call(d3.axisLeft(yScale));
+      }
+
+      plot.append('path')
+        .datum(values)
+        .attr('fill', 'none')
+        .attr('stroke', def.color)
+        .attr('stroke-width', 2)
+        .attr('d', d3.line()
+          .x(d => xScale(d[0]))
+          .y(d => yScale(d[1]))
+        );
+
+      plot.append('g')
+        .selectAll('circle')
+        .data(values)
+        .join('circle')
+          .attr('cx', d => xScale(d[0]))
+          .attr('cy', d => yScale(d[1]))
+          .attr('r', 4)
+          .style('fill', def.color);
     }
 
-    plot.append('g')
-      .attr('transform', `translate(${margin.left},0)`)
-      .call(d3.axisLeft(yScale));
-
-    plot.append('path')
-      .datum(glucose)
-      .attr('fill', 'none')
-      .attr('stroke', '#cc5500')
-      .attr('stroke-width', 2)
-      .attr('d', d3.line()
-        .x(d => xScale(d[0]))
-        .y(d => yScale(d[1]))
-      );
-
-    plot.append('g')
-      .selectAll('circle')
-      .data(glucose)
-      .join('circle')
-        .attr('cx', d => xScale(d[0]))
-        .attr('cy', d => yScale(d[1]))
-        .attr('r', 4)
-        .style('fill', '#cc5500');
-
-    const lantus = allValues['Lantus'];
-
-    const yScale2 = d3.scaleLinear(
-      [ 0, 5 ],
-      [ height - margin.bottom, margin.top ]
-    );
-
-    plot.append('path')
-      .datum(lantus)
-      .attr('fill', 'none')
-      .attr('stroke', '#080')
-      .attr('stroke-width', 2)
-      .attr('d', d3.line()
-        .x(d => xScale(d[0]))
-        .y(d => yScale2(d[1]))
-      );
-
-    plot.append('g')
-      .selectAll('circle')
-      .data(lantus)
-      .join('circle')
-        .attr('cx', d => xScale(d[0]))
-        .attr('cy', d => yScale2(d[1]))
-        .attr('r', 4)
-        .style('fill', '#080');
+    // https://github.com/ivankp/web-plots/blob/master/main.js#L294
 
     $(document.body, 'div', plot.node());
 
