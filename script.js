@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .call(d3.axisBottom(xScale));
 
     for (const name of ['Glucose', 'Lantus']) {
+      const def = defs.find(x => x.name === name);
       const values = allValues[name];
 
       const yScale = d3.scaleLinear(
@@ -117,46 +118,55 @@ document.addEventListener('DOMContentLoaded', () => {
         [ height - margin.bottom, margin.top ]
       ).nice();
 
-      const def = defs.find(x => x.name === name);
       if (def.normal !== undefined) {
         const [ x1, x2 ] = xScale.range();
         const [ y1, y2 ] = def.normal;
         $(plot.node(), 'path', {
           d: `M${x1} ${yScale(y1)} H${x2} M${x1} ${yScale(y2)} H${x2}`,
-          'stroke': '#777', 'stroke-width': 2, 'stroke-linecap': 'butt',
+          'stroke': def.color, 'stroke-width': 1.5, 'stroke-linecap': 'butt',
           'stroke-dasharray': dash_segment(x2 - x1, 10, 8), 'fill': 'none'
         });
       }
 
-      if (name === 'Glucose') { // TODO
+      if (def.scale === 'left') {
         plot.append('g')
           .attr('transform', `translate(${margin.left},0)`)
           .call(d3.axisLeft(yScale));
       }
 
-      plot.append('path')
-        .datum(values)
-        .attr('fill', 'none')
-        .attr('stroke', def.color)
-        .attr('stroke-width', 2)
-        .attr('d', d3.line()
-          .x(d => xScale(d[0]))
-          .y(d => yScale(d[1]))
-        );
+      const g = plot.append('g');
 
-      plot.append('g')
+      if (def.connect) {
+        g.append('path')
+          .datum(values)
+          .attr('fill', 'none')
+          .attr('stroke', def.color)
+          .attr('stroke-width', 2)
+          .attr('d', d3.line()
+            .x(d => xScale(d[0]))
+            .y(d => yScale(d[1]))
+          );
+      }
+
+      g.append('g')
+        .style('fill', def.color)
         .selectAll('circle')
         .data(values)
         .join('circle')
           .attr('cx', d => xScale(d[0]))
           .attr('cy', d => yScale(d[1]))
-          .attr('r', 4)
-          .style('fill', def.color);
+          .attr('r', 4);
     }
 
     // https://github.com/ivankp/web-plots/blob/master/main.js#L294
 
-    $(document.body, 'div', plot.node());
+    $(document.body, 'div', plot.node(), {
+      events: {
+        click: e => {
+          // $(e.target, { style: { 'object-fit': 'contain' } });
+        }
+      }
+    });
 
     const timeFormat = d3.timeFormat('%a, %d %b %I:%M %p');
 
