@@ -144,6 +144,20 @@
     "13 Jun 2025 11:27 am": { "Glucose": 204, "Lantus": 2 },
     "13 Jun 2025 10:47 pm": { "Glucose":  98, "Lantus": 0 },
     "14 Jun 2025 01:21 pm": { "Glucose": 512, "Lantus": 3 },
-    "15 Jun 2025 12:53 am": { "Glucose": 166, "Lantus": 1.5 }
+    "15 Jun 2025 12:53 am": { "Glucose": 166, "Lantus": 1.5 },
+    "15 Jun 2025 01:31 pm": { "Glucose": 292, "Lantus": 1.5 },
+    "15 Jun 2025 11:08 pm": { "Glucose": 132, "Lantus": 1 },
+    "16 Jun 2025 11:32 am": { "Glucose": 548, "Lantus": 2.5 },
+    "16 Jun 2025 11:16 pm": { "Glucose":  84, "Lantus": 0 },
+    "17 Jun 2025 12:00 pm": { "Glucose": 540, "Lantus": 2 },
+    "17 Jun 2025 11:56 pm": { "Glucose": 306, "Lantus": 2 },
+    "18 Jun 2025 12:25 pm": { "Glucose": 273, "Lantus": 2 },
+    "18 Jun 2025 10:33 pm": { "Glucose": 241, "Lantus": 2 },
+    "19 Jun 2025 10:54 am": { "Glucose": 185, "Lantus": 2 },
+    "19 Jun 2025 10:35 pm": { "Glucose": 205, "Lantus": 2 },
+    "20 Jun 2025 12:48 pm": { "Glucose": 335, "Lantus": 2 },
+    "21 Jun 2025 01:35 am": { "Glucose": 302, "Lantus": 2 },
+    "21 Jun 2025 01:28 pm": { "Glucose": 177, "Lantus": 2 },
+    "22 Jun 2025 12:54 am": { "Glucose": 238, "Lantus": 2 }
   }
 }
