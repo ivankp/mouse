@@ -73,18 +73,25 @@ const dash_segment = (width, a, b = a) => {
 const data_url =
 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSd9bRCnFgPozZ-okut_xHm1EVSmI9AJKqwEzLp0fMqI37jpqGqa7IbuuHdi2m4woLdutpKqu1aKJIo/pub?gid=0&single=true&output=tsv';
 
+const width = 900;
+const height = 300;
+const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+
 const stylesDefs = {
-    "Glucose": {
-      "color": "#c50", "scale": "left", "connect": true,
-      "normal": [ 80, 120 ]
+    Glucose: {
+      color: '#c50', scale: 'left', connect: true, normal: [ 80, 120 ]
     },
-    "Ketones": { "fixed": 1 },
-    "Lantus" : { "fixed": 1, "color": "#0809" },
-    "Humulin": { "fixed": 1 },
-    "Fluids" : { },
-    "Weight" : { "fixed": 1 },
-    "B12" : { }
+    Ketones: { fixed: 1 },
+    Lantus : { fixed: 1, color: '#0809', range: [ 266, margin.top ] },
+    Humulin: { fixed: 1, color: '#8089', range: [ 266+7, margin.top+7 ]  },
+    Fluids : { },
+    Weight : { fixed: 1 },
+    B12    : { }
 };
+
+const domains = [
+  [ [ 'Lantus', 'Humulin' ], null ]
+];
 
 document.addEventListener('DOMContentLoaded', () => {
   $fetch(data_url, false).then(tsv => {
@@ -98,9 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const styles = names.map(name => stylesDefs[name]);
 
-    const width = 900;
-    const height = 300;
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    for (const set of domains) {
+      set[0] = set[0].map(x => names.indexOf(x));
+    }
 
     const xScale = d3.scaleUtc(
       [ rows[0][0], rows[rows.length - 1][0] ],
@@ -115,13 +122,34 @@ document.addEventListener('DOMContentLoaded', () => {
       .attr('transform', `translate(0,${height - margin.bottom})`)
       .call(d3.axisBottom(xScale));
 
-    for (const col of [ 1, 3 ]) {
+    for (const col of [ 1, 3, 4 ]) {
       const style = styles[col];
 
-      const yScale = d3.scaleLinear(
-        [ 0, d3.max(rows, row => row[col]) * 1.05 ],
-        [ height - margin.bottom, margin.top ]
-      ).nice();
+      // domain = input, variable values
+      // range = output, svg coordinates
+      const yScale = d3.scaleLinear()
+        .range(style.range ?? [ height - margin.bottom, margin.top ]);
+
+      let domain = null;
+      for (const set of domains) {
+        if (set[0].includes(col)) {
+          if (set[1] === null) {
+            let max = null;
+            for (const row of rows) {
+              for (const i of set[0]) {
+                const x = row[i];
+                if (x !== null && (max === null || max < x))
+                  max = x;
+              }
+            }
+            console.log(max);
+            set[1] = [ 0, max * 1.05 ];
+          }
+          domain = set[1];
+          break;
+        }
+      }
+      yScale.domain(domain ?? [ 0, d3.max(rows, row => row[col]) * 1.05 ]).nice();
 
       if (style.normal !== undefined) {
         const [ x1, x2 ] = xScale.range();
